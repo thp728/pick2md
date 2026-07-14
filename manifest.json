@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "pick2md",
+  "version": "0.1.0",
+  "description": "Point at any element, even inside shadow DOM, and export it to Markdown.",
+  "permissions": ["activeTab", "scripting"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "pick2md: pick an element to export"
+  }
+}

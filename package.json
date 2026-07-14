@@ -1,0 +1,20 @@
+{
+  "name": "pick2md",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Chrome extension: DevTools-style hover picker that exports a single element to Markdown, including shadow-DOM pages other pickers miss.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.270",
+    "esbuild": "^0.23.0",
+    "typescript": "^5.5.0"
+  },
+  "dependencies": {
+    "turndown": "^7.2.0",
+    "turndown-plugin-gfm": "^1.0.2"
+  }
+}
