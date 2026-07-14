@@ -6,10 +6,12 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "watch": "node scripts/build.mjs --watch"
+    "watch": "node scripts/build.mjs --watch",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.270",
+    "@types/turndown": "^5.0.6",
     "esbuild": "^0.23.0",
     "typescript": "^5.5.0"
   },
