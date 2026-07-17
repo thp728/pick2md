@@ -247,16 +247,6 @@ function teardown(): void {
   }
 }
 
-// Re-injection acts as a toggle: activate if idle, tear down if already active.
-(() => {
-  const state = (window.__pick2md__ ??= { picker: null });
-  if (state.picker) {
-    teardown();
-  } else {
-    state.picker = new Picker();
-  }
-})();
-
 // ---- helpers ----------------------------------------------------------------
 
 let turndown: TurndownService | null = null;
@@ -408,5 +398,20 @@ const CSS = `
   .p2m-hint { background: #111827; color: #9ca3af; border-color: #374151; }
 }
 `;
+
+// Activation runs last, after CSS and all helpers above are initialized —
+// the constructor uses them synchronously (e.g. adoptedStyleSheets), and a
+// top-level const in an esbuild IIFE bundle is only safe to read once its
+// own declaration has executed.
+//
+// Re-injection acts as a toggle: activate if idle, tear down if already active.
+(() => {
+  const state = (window.__pick2md__ ??= { picker: null });
+  if (state.picker) {
+    teardown();
+  } else {
+    state.picker = new Picker();
+  }
+})();
 
 export {};
