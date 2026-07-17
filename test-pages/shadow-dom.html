@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>pick2md manual test: nested open shadow roots</title>
+<style>
+  body { font: 15px/1.5 system-ui, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 16px; }
+  section { border: 1px solid #ccc; padding: 12px; margin: 16px 0; border-radius: 6px; }
+  h2 { margin-top: 0; }
+</style>
+</head>
+<body>
+<h1>pick2md manual test page</h1>
+<p>
+  This page mixes plain DOM with two and three levels of nested <strong>open</strong>
+  shadow roots, plus an <code>iframe</code> (out of scope — should just fail to
+  highlight/pick anything inside it, not crash the picker).
+</p>
+
+<section>
+  <h2>Baseline (no shadow DOM)</h2>
+  <p id="plain-target">Hover and pick this plain paragraph. It has a <a href="#">link</a> and
+  a <em>styled span</em> inside it, to test climbing from a leaf up through a normal tree.</p>
+  <ul>
+    <li>Item one</li>
+    <li>Item two</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Single shadow root</h2>
+  <div id="host-1"></div>
+</section>
+
+<section>
+  <h2>Nested shadow roots (2 levels deep)</h2>
+  <div id="host-2"></div>
+</section>
+
+<section>
+  <h2>Deeply nested shadow roots (3 levels deep)</h2>
+  <div id="host-3"></div>
+</section>
+
+<section>
+  <h2>Cross-origin iframe (out of scope)</h2>
+  <iframe src="https://example.com" width="600" height="150" title="cross-origin, expected unreachable"></iframe>
+</section>
+
+<script>
+  function makeCard(label, depth) {
+    const wrap = document.createElement("div");
+    const root = wrap.attachShadow({ mode: "open" });
+    root.innerHTML = `
+      <style>
+        .card { border: 2px dashed #6366f1; padding: 10px; border-radius: 6px; font: 14px/1.4 system-ui; }
+        .title { font-weight: 700; color: #4338ca; }
+        table { border-collapse: collapse; margin-top: 8px; }
+        td, th { border: 1px solid #999; padding: 4px 8px; }
+      </style>
+      <div class="card">
+        <div class="title">${label} (depth ${depth})</div>
+        <p>Leaf paragraph inside shadow root at depth ${depth}. Try hovering
+        directly onto this text, then press ArrowUp repeatedly to climb back
+        out through the shadow host into the page.</p>
+        <table>
+          <tr><th>Col A</th><th>Col B</th></tr>
+          <tr><td>1</td><td>2</td></tr>
+        </table>
+        <div class="nested-slot"></div>
+      </div>
+    `;
+    return { wrap, slot: root.querySelector(".nested-slot") };
+  }
+
+  document.getElementById("host-1").appendChild(makeCard("Shadow root", 1).wrap);
+
+  const l2 = makeCard("Outer shadow root", 1);
+  const inner2 = makeCard("Inner shadow root", 2);
+  l2.slot.appendChild(inner2.wrap);
+  document.getElementById("host-2").appendChild(l2.wrap);
+
+  const l3a = makeCard("Outer shadow root", 1);
+  const l3b = makeCard("Middle shadow root", 2);
+  const l3c = makeCard("Innermost shadow root", 3);
+  l3b.slot.appendChild(l3c.wrap);
+  l3a.slot.appendChild(l3b.wrap);
+  document.getElementById("host-3").appendChild(l3a.wrap);
+</script>
+</body>
+</html>
