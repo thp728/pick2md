@@ -56,9 +56,13 @@ class Picker {
     this.host.style.cssText = "all: initial;";
     this.root = this.host.attachShadow({ mode: "open" });
 
-    const style = document.createElement("style");
-    style.textContent = CSS;
-    this.root.appendChild(style);
+    // Constructable stylesheets are applied via CSSOM, not parsed from markup,
+    // so they aren't subject to the page's CSP style-src (unlike a <style>
+    // element or style attribute) — needed on sites like Wikipedia that block
+    // inline styles. Supported since Chrome 73, well under our chrome110 target.
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(CSS);
+    this.root.adoptedStyleSheets = [sheet];
 
     this.overlay = document.createElement("div");
     this.overlay.className = "p2m-overlay";
