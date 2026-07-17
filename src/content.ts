@@ -97,24 +97,29 @@ class Picker {
       teardown();
       return;
     }
-    if (this.frozen || !this.current) return;
+    if (this.frozen) return;
+
+    // These keys are reserved for picker navigation while active — always
+    // swallow them so the page never scrolls/submits underneath us, even if
+    // there's nothing to climb/descend into yet (e.g. no hover registered).
+    if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "Enter") {
+      e.preventDefault();
+    }
+    if (!this.current) return;
 
     if (e.key === "ArrowUp") {
       const parent = climbFrom(this.current);
       if (parent) {
-        e.preventDefault();
         this.descendStack.push(this.current);
         this.select(parent);
       }
     } else if (e.key === "ArrowDown") {
       const child = this.descendStack.pop();
       if (child) {
-        e.preventDefault();
         this.select(child);
       }
     } else if (e.key === "Enter") {
       // Enter commits the current selection, mirroring a click.
-      e.preventDefault();
       this.commit();
     }
   };
